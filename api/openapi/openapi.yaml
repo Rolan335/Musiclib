@@ -1,0 +1,224 @@
+openapi: 3.0.0
+info:
+  title: Music Library API
+  version: 1.0.0
+paths:
+  /songs:
+    get:
+      summary: Получение данных библиотеки с фильтрацией по всем полям и пагинацией
+      parameters:
+        - name: group
+          in: query
+          description: Фильтрация по имени исполнителя
+          schema:
+            type: string
+        - name: title
+            in: query
+        description: Фильтрация по названию песни
+        schema:
+            type: string
+        - name: text
+          in: query
+          description: Поиск по тексту песни (подстрока)
+          schema:
+            type: string
+        - name: date_from
+          in: query
+          description: Фильтрация — песни после указанной даты (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          description: Фильтрация — песни до указанной даты (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: Номер страницы
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Количество элементов на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Library data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongGet'
+        "500":
+          description: Internal server error
+    post:
+      summary: Добавление новой песни
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                group:
+                  example: My bloody valentine
+                  type: string
+                title:
+                  example: When you sleep
+                  type: string
+      responses:
+        "201":
+          description: Successfully added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+        "504":
+          description: Gateway timeout
+  /songs/{id}/text:
+    get:
+      summary: Получение текста песни с пагинацией по куплетам
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Song text
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lyrics:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: string
+        "404":
+          description: Song not found
+        "500":
+          description: Internal server error
+  /songs/{id}:
+    delete:
+      summary: Удаление песни
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Successfully deleted
+        "404":
+          description: Song not found
+        "500":
+          description: Internal server error
+    patch:
+      summary: Изменение данных песни
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/SongPatch'
+      responses:
+        "204":
+          description: Данные песни успешно обновлены
+        "404":
+          description: Song not found
+        "500":
+          description: Internal server error
+components:
+        schemas:
+          SongPatch:
+            type: object
+            properties:
+              group:
+                type: string
+                example: "The Beatles"
+              title:
+                type: string
+                example: "Hey Jude"
+              releaseDate:
+                type: string
+                format: date
+                example: "16.07.2006"
+              text:
+                type: string
+                example: >
+                  Ooh baby, don't you know I suffer?\nOoh baby, can
+                  you hear me moan?\nYou caught me under false pretenses\nHow long
+                  before you let me go?\n\nOoh\nYou set my soul alight\nOoh\nYou set
+                  my soul alight
+              link:
+                type: string
+                example: "https://www.youtube.com/watch?v=Xsp3_a-PMTw"
+          SongGet:
+            type: object
+            required:
+              - id
+              - group
+              - title
+              - releaseDate
+              - text
+              - link
+            properties:
+              id:
+                type: integer
+                example: 1
+              group:
+                type: string
+                example: "The Beatles"
+              title:
+                type: string
+                example: "Hey Jude"
+              releaseDate:
+                type: string
+                format: date
+                example: "16.07.2006"
+              text:
+                type: string
+                example: >
+                  Ooh baby, don't you know I suffer?\nOoh baby, can
+                  you hear me moan?\nYou caught me under false pretenses\nHow long
+                  before you let me go?\n\nOoh\nYou set my soul alight\nOoh\nYou set
+                  my soul alight
+              link:
+                type: string
+                example: "https://www.youtube.com/watch?v=Xsp3_a-PMTw"
