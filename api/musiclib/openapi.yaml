@@ -13,9 +13,9 @@ paths:
           schema:
             type: string
         - name: title
-            in: query
-        description: Фильтрация по названию песни
-        schema:
+          in: query
+          description: Фильтрация по названию песни
+          schema:
             type: string
         - name: text
           in: query

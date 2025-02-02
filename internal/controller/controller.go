@@ -8,11 +8,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/Rolan335/Musiclib/internal/entity"
 	"github.com/Rolan335/Musiclib/internal/musiclib"
 	"github.com/Rolan335/Musiclib/pkg/api"
 	"github.com/Rolan335/Musiclib/pkg/musicinfo"
-	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
@@ -34,22 +35,6 @@ func MustNewServer(service *musiclib.MusicLib, externalApiURL string, timeout ti
 	}
 }
 
-// GetSongs godoc
-// @Summary Получение данных библиотеки с фильтрацией по всем полям и пагинацией
-// @Description Получение песен с фильтрацией по имени исполнителя, названию песни, тексту песни и диапазону дат с поддержкой пагинации
-// @ID get-songs
-// @Accept json
-// @Produce json
-// @Param group query string false "Фильтрация по имени исполнителя"
-// @Param title query string false "Фильтрация по названию песни"
-// @Param text query string false "Поиск по тексту песни"
-// @Param date_from query string false "Фильтрация — песни после указанной даты (YYYY-MM-DD)"
-// @Param date_to query string false "Фильтрация — песни до указанной даты (YYYY-MM-DD)"
-// @Param page query int false "Номер страницы"
-// @Param page_size query int false "Количество элементов на странице"
-// @Success 200 {array} entity.Song "Library data"
-// @Failure 500 {object} gin.H "Internal server error"
-// @Router /songs [get]
 func (s *Server) GetSongs(c *gin.Context, params api.GetSongsParams) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), s.timeout)
 	defer cancel()
@@ -77,17 +62,6 @@ func (s *Server) GetSongs(c *gin.Context, params api.GetSongsParams) {
 	c.JSON(200, songs)
 }
 
-// PostSongs godoc
-// @Summary Добавление новой песни
-// @Description Добавление новой песни с извлечением информации о песне из внешнего API
-// @Accept json
-// @Produce json
-// @Param song body Song true "Song data"
-// @Success 201 {object} map[string]int "Successfully added"
-// @Failure 400 {object} gin.H "Bad request"
-// @Failure 500 {object} gin.H "Internal server error"
-// @Failure 504 {object} gin.H "Gateway timeout"
-// @Router /songs [post]
 func (s *Server) PostSongs(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), s.timeout)
 	defer cancel()
@@ -103,7 +77,7 @@ func (s *Server) PostSongs(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
-	//Если во внешнем апи не нашлось информации о песне, то не добавляем ее в базу
+	//If not found in external api, return not found
 	if resp.StatusCode != http.StatusOK {
 		c.JSON(http.StatusNotFound, gin.H{"error": ErrNotFound.Error()})
 		return
@@ -131,14 +105,6 @@ func (s *Server) PostSongs(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
-// DeleteSongsId godoc
-// @Summary Удаление песни
-// @Description Удаление песни по её ID
-// @Param id path int true "Song ID"
-// @Success 204 {object} gin.H "Successfully deleted"
-// @Failure 404 {object} gin.H "Song not found"
-// @Failure 500 {object} gin.H "Internal server error"
-// @Router /songs/{id} [delete]
 func (s *Server) DeleteSongsId(c *gin.Context, id int) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), s.timeout)
 	defer cancel()
@@ -153,15 +119,6 @@ func (s *Server) DeleteSongsId(c *gin.Context, id int) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-// PatchSongsId godoc
-// @Summary Изменение данных песни
-// @Description Обновление данных песни по её ID
-// @Param id path int true "Song ID"
-// @Param song body SongNullable true "Updated song data"
-// @Success 204 {object} gin.H "Successfully updated"
-// @Failure 404 {object} gin.H "Song not found"
-// @Failure 500 {object} gin.H "Internal server error"
-// @Router /songs/{id} [patch]
 func (s *Server) PatchSongsId(c *gin.Context, id int) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), s.timeout)
 	defer cancel()

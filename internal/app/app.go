@@ -5,13 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/Rolan335/Musiclib/internal/config"
 	"github.com/Rolan335/Musiclib/internal/controller"
 	"github.com/Rolan335/Musiclib/internal/logger"
 	"github.com/Rolan335/Musiclib/pkg/api"
-	"github.com/gin-gonic/gin"
-	"github.com/openapi-ui/go-openapi-ui/pkg/doc"
-	ginopenapiui "github.com/openapi-ui/go-openapi-ui/pkg/middleware/gin"
 )
 
 type Service struct {
@@ -28,17 +27,11 @@ func NewService(config *config.Config, server *controller.Server, log *logger.Lo
 	gin.SetMode(config.GinMode)
 	r := gin.Default()
 
-	r.StaticFile("/openapi.yaml", "./api/openapi/openapi.yaml")
-
-	doc := doc.Doc{
-		Title:       "Example API",
-		Description: "Example API Description",
-		SpecFile:    "./api/openapi/openapi.yaml",
-		SpecPath:    "/openapi.yaml",
-		DocsPath:    "/documentation",
-		Theme:       "dark",
-	}
-	r.GET("/documentation", ginopenapiui.New(doc))
+	r.StaticFile("/openapi.yaml", "./api/musiclib/openapi.yaml")
+	r.LoadHTMLGlob("templates/*")
+	r.GET("/swagger", func(c *gin.Context) {
+		c.HTML(200, "swagger.html", nil)
+	})
 
 	api.RegisterHandlers(r, server)
 
@@ -51,7 +44,7 @@ func NewService(config *config.Config, server *controller.Server, log *logger.Lo
 	}
 }
 
-func (s *Service) MustStart() {
+func (s *Service) Start() {
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil {
 			s.log.Logger.Error("server is off", "error", err.Error())

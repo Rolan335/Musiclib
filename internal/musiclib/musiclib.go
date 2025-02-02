@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/Rolan335/Musiclib/internal/entity"
-	"github.com/Rolan335/Musiclib/internal/repository/postgres"
 	"github.com/Rolan335/Musiclib/internal/logger"
+	"github.com/Rolan335/Musiclib/internal/repository/postgres"
 )
 
 type Storage interface {

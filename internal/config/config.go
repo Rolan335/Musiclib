@@ -3,9 +3,10 @@ package config
 import (
 	"time"
 
-	"github.com/Rolan335/Musiclib/internal/repository/postgres"
 	"github.com/caarlos0/env/v10"
 	"github.com/joho/godotenv"
+
+	"github.com/Rolan335/Musiclib/internal/repository/postgres"
 )
 
 type ExternalApiConfig struct {

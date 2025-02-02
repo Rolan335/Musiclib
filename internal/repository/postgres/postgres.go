@@ -7,10 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Rolan335/Musiclib/internal/entity"
-	"github.com/Rolan335/Musiclib/internal/logger"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/Rolan335/Musiclib/internal/entity"
+	"github.com/Rolan335/Musiclib/internal/logger"
 )
 
 type Config struct {

@@ -16,14 +16,6 @@ import (
 	"github.com/Rolan335/Musiclib/internal/repository/postgres"
 )
 
-// @title Music Library API
-// @version 1.0
-// @description Music Library API documentation
-// @termsOfService http://swagger.io/terms/
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
 func main() {
 	//load config from env
 	cfg := config.MustNewConfig()
@@ -52,7 +44,7 @@ func main() {
 	//creating notify ctx for graceful shutdown and starting app
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
-	app.MustStart()
+	app.Start()
 	<-ctx.Done()
 
 	//stopping server and provided services. Provided servies should have method Stop()
